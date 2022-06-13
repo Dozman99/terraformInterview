@@ -25,7 +25,7 @@ resource "azurerm_subnet_network_security_group_association" "example" {
 
 resource "azurerm_network_security_rule" "example" {
   name                        = "test123"
-  priority                    = 100
+  priority                    = local.free_priority
   direction                   = "Outbound"
   access                      = "Allow"
   protocol                    = "Tcp"
