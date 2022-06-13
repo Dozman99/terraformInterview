@@ -21,7 +21,7 @@ locals {
           ]
   # priorities = [1,3,4,5]
 
-  free_priority = [for i in range(100,
+  free_priority = [for i in range(try(min(local.priorities...), 100),
                         try(max(local.priorities...), 100) + 2)
                      : i if !contains(local.priorities, i)][0]
 }
