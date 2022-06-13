@@ -8,6 +8,11 @@ variable "module" {
   default = "../../Subscriptions/Subscription_A"
 }
 
+variable "state_file" {
+  description = "Pass in a separate state file for the Subscription A module"
+  default = ""
+}
+
 
 # An external provider is used to fetch the state information from Subscription A
 # This assumes that the state file exists for that module containing all the resources deployed by the module
@@ -21,7 +26,7 @@ variable "module" {
 data "external" "example" {
   program = ["sh",
               "-c",
-              "echo '{\"data\": \"'$(terraform -chdir=${var.module} show -json | sed -E 's/\"/\\\\\"/g')'\"}'"
+              "echo '{\"data\": \"'$(terraform -chdir=${var.module} show -json ${var.state_file} | sed -E 's/\"/\\\\\"/g')'\"}'"
             ]
 }
 
@@ -29,13 +34,17 @@ data "external" "example" {
 # The result obtained fron the external provisioner is further processes to extract the needed information
 locals {
 
+  state_data = jsondecode(data.external.example.result.data)
+
+  state_values = try(local.state_data.values, local.state_data.planned_values, {})
+
   # A list of all priorities declared in Subscription A is obtained by filtering for all network security rules
   # declared in the module and returning their various priority values.
   # The data is gotten by converting the json string gotten from the external provider to a json object using the
   # jsondecode() function
 
   # Example result: priorities = [100, 102, 104]
-  priorities = [ for res in try(jsondecode(data.external.example.result.data).values.root_module.resources, [])
+  priorities = [ for res in try(local.state_values.root_module.resources, [])
               : res.values.priority
               if res.type == var.resource
           ]
