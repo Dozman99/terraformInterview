@@ -73,3 +73,9 @@ locals {
 output "free_priority" {
   value = local.free_priority
 }
+
+# Output the existing priorities
+output "priorities" {
+  value = local.priorities
+}
+
