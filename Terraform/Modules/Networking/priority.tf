@@ -10,7 +10,7 @@ variable "module" {
 
 
 # An external provider is used to fetch the state information from Subscription A
-# This assumes the state file exists within that module containing all the resources deployed in the module
+# This assumes that the state file exists for that module containing all the resources deployed by the module
 
 # The defined program performs the following:
 # 1. Use terraform -chdir=${var.module} show -json to fetch the state information for the module in json format
@@ -37,7 +37,7 @@ locals {
   # Example result: priorities = [100, 102, 104]
   priorities = [ for res in try(jsondecode(data.external.example.result.data).values.root_module.resources, [])
               : res.values.priority
-              if try(regex(".{${length(var.resource) + 1}}", "${res.address}."), "") == var.resource
+              if res.type == var.resource
           ]
 
 
