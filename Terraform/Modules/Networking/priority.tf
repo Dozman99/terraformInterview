@@ -13,7 +13,7 @@ variable "state_file" {
   default = ""
 }
 
-
+# dis was done assuming that your statefile is located on your local machine
 # An external provider is used to fetch the state information from Subscription A
 # This assumes that the state file exists for that module containing all the resources deployed by the module
 
